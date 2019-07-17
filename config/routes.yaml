@@ -2,6 +2,3 @@
 #    path: /
 #    controller: App\Controller\DefaultController::index
 
-blog:
-  path: /
-  controller: App\Controller\MainController::index
