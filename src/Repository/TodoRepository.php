@@ -19,6 +19,24 @@ class TodoRepository extends ServiceEntityRepository
         parent::__construct($registry, Todo::class);
     }
 
+    /**
+     * Find the Like to input value
+     * @param $value
+     * @return mixed
+     */
+    public function findByName($value)
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.name LIKE :val')
+            ->setParameter('val', '%' . $value . '%')
+            ->orderBy('t.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+
     // /**
     //  * @return Todo[] Returns an array of Todo objects
     //  */
