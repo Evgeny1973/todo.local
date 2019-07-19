@@ -6,6 +6,7 @@ use App\Entity\Todo;
 use App\Form\TodoType;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use \Symfony\Component\HttpFoundation\Response;
 use \Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,12 +38,21 @@ class MainController extends AbstractController
     /**
      * @Route("/todo/{name}", name="todo")
      * @param string $name
+     * @param Request $request
      * @return Response
+     * @throws \Exception
      */
-    public function todo(string $name): Response
+    public function todo(string $name, Request $request): Response
     {
-        $form = $this->createForm(TodoType::class);
-
+        $todo = new Todo;
+        $form = $this->createForm(TodoType::class, $todo);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $todo->setDateCreation(new DateTime('now'));
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($todo);
+            $em->flush();
+        }
         return $this->render('main/todo.html.twig', ['name' => $name, 'form' => $form->createView()]);
     }
 
@@ -59,19 +69,22 @@ class MainController extends AbstractController
     }
 
     /**
-     * @Route("/updatetodo/{id}", name="update_todo")
+     * @Route("/edittodo/{id}", name="edit_todo")
      * @param Todo|null $todo
      * @return Response
      */
-    public function updateTodo(?Todo $todo): Response
+    public function editTodo(?Todo $todo, Request $request): Response
     {
         if (!$todo) {
             throw $this->createNotFoundException('Ничего не найдено.');
         }
-        $em = $this->getDoctrine()->getManager();
-        $todo->setPriority('Средний');
-        $em->flush();
-        return new Response($todo->getPriority());
+        $form = $this->createForm(TodoType::class, $todo);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+        return $this->render('main/todo.html.twig', ['name' => 'Котя', 'form' => $form->createView()]);
     }
 
     /**
@@ -87,6 +100,6 @@ class MainController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $em->remove($todo);
         $em->flush();
-        return new Response('Запись ' . $todo->getName() .' удалена!');
+        return new Response('Запись ' . $todo->getName() . ' удалена!');
     }
 }

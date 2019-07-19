@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TodoRepository")
@@ -23,6 +24,7 @@ class Todo
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull(message="Поле не может быть пустым.")
      */
     private $priority;
 
