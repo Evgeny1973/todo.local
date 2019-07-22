@@ -36,13 +36,12 @@ class MainController extends AbstractController
     }
 
     /**
-     * @Route("/todo/{name}", name="todo")
-     * @param string $name
+     * @Route("/createtodo/", name="create_todo")
      * @param Request $request
      * @return Response
      * @throws \Exception
      */
-    public function todo(string $name, Request $request): Response
+    public function createTodo(Request $request): Response
     {
         $todo = new Todo;
         $form = $this->createForm(TodoType::class, $todo);
@@ -53,7 +52,7 @@ class MainController extends AbstractController
             $em->persist($todo);
             $em->flush();
         }
-        return $this->render('main/todo.html.twig', ['name' => $name, 'form' => $form->createView()]);
+        return $this->render('main/todo.html.twig', ['form' => $form->createView()]);
     }
 
     /**
